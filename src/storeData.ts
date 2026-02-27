@@ -1,0 +1,277 @@
+export type StoreItem = {
+  id: string;
+  name: string;
+  publisher: string;
+  price: string;
+  color: string;
+  icon: string;
+  image?: string;
+};
+
+export const featuredApp: StoreItem = {
+  id: "gocco-doodle",
+  name: "Gocco Doodle - KidsPaint&Share",
+  publisher: "SMARTEDUCATION,LTD",
+  price: "FREE",
+  color: "#f0843a",
+  icon: "paintbrush",
+};
+
+export const playerChoice: StoreItem[] = [
+  {
+    id: "dragon-box",
+    name: "DragonBox \u0410\u043b\u0433\u0435\u0431\u0440\u0430",
+    publisher: "WeWantToKnow",
+    price: "9,99 \u0414\u041e\u041b\u041b\u0410\u0420\u041e\u0412",
+    color: "#d58a28",
+    icon: "dragon",
+  },
+  {
+    id: "splashtop",
+    name: "\u0423\u0434\u0430\u043b\u0435\u043d\u043d\u044b\u0439 \u0440\u0430\u0431\u043e\u0447\u0438\u0439",
+    publisher: "Splashtop",
+    price: "\u0411\u0415\u0421\u041f\u041b\u0410\u0422\u041d\u041e",
+    color: "#74b726",
+    icon: "desktop",
+  },
+  {
+    id: "pocoyo",
+    name: "\u0413\u043e\u0432\u043e\u0440\u044f\u0449\u0438\u0439 \u041f\u043e\u043a\u043e\u0439\u043e",
+    publisher: "Zinkia",
+    price: "1,99 \u0414\u041e\u041b\u041b\u0410\u0420\u0410",
+    color: "#3ea1e1",
+    icon: "child",
+  },
+  {
+    id: "chords",
+    name: "\u0410\u043a\u043a\u043e\u0440\u0434\u044b! \u0411\u0435\u0441\u043f\u043b\u0430\u0442\u043d\u043e",
+    publisher: "RabugenTom",
+    price: "\u0411\u0415\u0421\u041f\u041b\u0410\u0422\u041d\u041e",
+    color: "#7b4f36",
+    icon: "music",
+  },
+  {
+    id: "abc-news",
+    name: "ABC News",
+    publisher: "ABC News",
+    price: "\u0411\u0415\u0421\u041f\u041b\u0410\u0422\u041d\u041e",
+    color: "#2f3238",
+    icon: "newspaper",
+  },
+  {
+    id: "espn",
+    name: "WatchESPN",
+    publisher: "ESPN Inc",
+    price: "\u0411\u0415\u0421\u041f\u041b\u0410\u0422\u041d\u041e",
+    color: "#da2331",
+    icon: "play",
+  },
+  {
+    id: "jumpcam",
+    name: "JumpCam",
+    publisher: "Social Studio",
+    price: "\u0411\u0415\u0421\u041f\u041b\u0410\u0422\u041d\u041e",
+    color: "#d33b2f",
+    icon: "camera",
+  },
+  {
+    id: "guardian-live",
+    name: "Guardian Live",
+    publisher: "Guardian Media",
+    price: "\u0411\u0415\u0421\u041f\u041b\u0410\u0422\u041d\u041e",
+    color: "#1f5f90",
+    icon: "newspaper",
+  },
+  {
+    id: "trail-run",
+    name: "Trail Run",
+    publisher: "Blue Peak",
+    price: "0,99 \u0414\u041e\u041b\u041b\u0410\u0420\u0410",
+    color: "#3d8c4b",
+    icon: "heartbeat",
+  },
+];
+
+export const classTools: StoreItem[] = [
+  {
+    id: "edublogs",
+    name: "\u042d\u0434\u0443\u0431\u043b\u043e\u0433\u0438",
+    publisher: "Edublogs",
+    price: "\u0411\u0415\u0421\u041f\u041b\u0410\u0422\u041d\u041e",
+    color: "#3f4851",
+    icon: "graduation",
+  },
+  {
+    id: "explain",
+    name: "\u041e\u0431\u044a\u044f\u0441\u043d\u0438\u0442\u0435 \u0432\u0441\u0451",
+    publisher: "MorrisCooke",
+    price: "2,99 \u0414\u041e\u041b\u041b\u0410\u0420\u0410",
+    color: "#7dc9e9",
+    icon: "video",
+  },
+  {
+    id: "mindomo",
+    name: "\u041c\u0438\u043d\u0434\u043e\u043c\u043e",
+    publisher: "Expert Software",
+    price: "\u0411\u0415\u0421\u041f\u041b\u0410\u0422\u041d\u041e",
+    color: "#c96275",
+    icon: "sitemap",
+  },
+  {
+    id: "movenote",
+    name: "Movenote",
+    publisher: "Movenote Oy",
+    price: "\u0411\u0415\u0421\u041f\u041b\u0410\u0422\u041d\u041e",
+    color: "#21a8dd",
+    icon: "rotate",
+  },
+  {
+    id: "planner",
+    name: "\u041f\u043b\u0430\u043d\u0438\u0440\u043e\u0432\u0449\u0438\u043a",
+    publisher: "Inssync",
+    price: "\u0411\u0415\u0421\u041f\u041b\u0410\u0422\u041d\u041e",
+    color: "#2b7ea8",
+    icon: "pencil",
+  },
+  {
+    id: "papyrus",
+    name: "\u041f\u0430\u043f\u0438\u0440\u0443\u0441",
+    publisher: "Steadfast",
+    price: "\u0411\u0415\u0421\u041f\u041b\u0410\u0422\u041d\u041e",
+    color: "#79c8e8",
+    icon: "scroll",
+  },
+  {
+    id: "piazza",
+    name: "\u041f\u044c\u044f\u0446\u0446\u0430",
+    publisher: "Piazza",
+    price: "\u0411\u0415\u0421\u041f\u041b\u0410\u0422\u041d\u041e",
+    color: "#5f9cc8",
+    icon: "p",
+  },
+  {
+    id: "pdf",
+    name: "RepliGo PDF",
+    publisher: "Cerience",
+    price: "2,99 \u0414\u041e\u041b\u041b\u0410\u0420\u0410",
+    color: "#b42d2d",
+    icon: "file",
+  },
+  {
+    id: "classnote",
+    name: "ClassNote",
+    publisher: "LearnSoft",
+    price: "\u0411\u0415\u0421\u041F\u041B\u0410\u0422\u041D\u041E",
+    color: "#4f78d1",
+    icon: "calendar",
+  },
+  {
+    id: "quiz-cloud",
+    name: "Quiz Cloud",
+    publisher: "Edu Cloud",
+    price: "1,99 \u0414\u041E\u041B\u041B\u0410\u0420\u0410",
+    color: "#8b66cc",
+    icon: "wifi",
+  },
+];
+
+export const appsGrid: StoreItem[] = [
+  {
+    id: "gocco-doodle",
+    name: "Gocco Doodle",
+    publisher: "SMARTEDUCATION,LTD",
+    price: "LIBRE",
+    color: "#f0843a",
+    icon: "paintbrush",
+  },
+  {
+    id: "voice-note",
+    name: "\u0417\u0432\u0443\u043a\u043e\u0437\u0430\u043f\u0438\u0441\u044c",
+    publisher: "SchematicLabs",
+    price: "LIBRE",
+    color: "#8a5f43",
+    icon: "music",
+  },
+  {
+    id: "pinterest",
+    name: "\u041f\u0438\u043d\u0442\u0435\u0440\u0435\u0441\u0442",
+    publisher: "Pinterest, Inc.",
+    price: "LIBRE",
+    color: "#d13a33",
+    icon: "thumbtack",
+  },
+  {
+    id: "netflix",
+    name: "Netflix",
+    publisher: "Netflix, Inc.",
+    price: "LIBRE",
+    color: "#bc2e26",
+    icon: "film",
+  },
+  {
+    id: "manila",
+    name: "\u041c\u0430\u043d\u0438\u043b\u0430",
+    publisher: "Manila LLC",
+    price: "LIBRE",
+    color: "#f0f0f0",
+    icon: "envelope",
+  },
+  {
+    id: "nhl-live",
+    name: "\u0416\u0438\u0432\u044b\u0435 \u043e\u0431\u043e\u0438 NHL",
+    publisher: "Cellfish Studios",
+    price: "LIBRE",
+    color: "#535b62",
+    icon: "hockey",
+  },
+  {
+    id: "bh-photo",
+    name: "B&H \u0424\u043e\u0442\u043e \u0412\u0438\u0434\u0435\u043e",
+    publisher: "B&H",
+    price: "LIBRE",
+    color: "#de5c38",
+    icon: "camera",
+  },
+  {
+    id: "engadget",
+    name: "Engadget Mini",
+    publisher: "AOL Inc.",
+    price: "LIBRE",
+    color: "#79c4f4",
+    icon: "wifi",
+  },
+  {
+    id: "any-do",
+    name: "Cal: \u041a\u0430\u043b\u0435\u043d\u0434\u0430\u0440\u044c",
+    publisher: "Any.do",
+    price: "LIBRE",
+    color: "#ef4e58",
+    icon: "calendar",
+  },
+  {
+    id: "noom",
+    name: "\u0422\u0440\u0435\u043d\u0435\u0440 Noom",
+    publisher: "Noom Inc.",
+    price: "LIBRE",
+    color: "#59be46",
+    icon: "heartbeat",
+  },
+  {
+    id: "walmart",
+    name: "Walmart",
+    publisher: "Walmart",
+    price: "LIBRE",
+    color: "#2b78bf",
+    icon: "cart",
+  },
+  {
+    id: "lovely",
+    name: "\u041f\u0440\u0435\u043a\u0440\u0430\u0441\u043d\u044b\u0439 \u0432\u044b\u0431\u043e\u0440",
+    publisher: "livelovely.com",
+    price: "LIBRE",
+    color: "#f36a3d",
+    icon: "heart",
+  },
+];
+
+export const screenshots = ["#282828", "#e8dec2", "#e8d5de", "#f9e4cc"];

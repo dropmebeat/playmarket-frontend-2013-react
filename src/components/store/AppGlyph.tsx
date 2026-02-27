@@ -1,0 +1,61 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCalendarDays,
+  faCamera,
+  faCartShopping,
+  faChild,
+  faCompactDisc,
+  faDesktop,
+  faDragon,
+  faEnvelope,
+  faFileLines,
+  faFilm,
+  faGamepad,
+  faGraduationCap,
+  faHeart,
+  faHeartbeat,
+  faHockeyPuck,
+  faMusic,
+  faNewspaper,
+  faPaintBrush,
+  faPencil,
+  faPlay,
+  faRotateRight,
+  faSitemap,
+  faThumbtack,
+  faVideo,
+  faWifi,
+} from "@fortawesome/free-solid-svg-icons";
+import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
+
+const iconMap: Record<string, IconDefinition> = {
+  dragon: faDragon,
+  desktop: faDesktop,
+  child: faChild,
+  music: faMusic,
+  newspaper: faNewspaper,
+  play: faPlay,
+  camera: faCamera,
+  graduation: faGraduationCap,
+  video: faVideo,
+  sitemap: faSitemap,
+  rotate: faRotateRight,
+  pencil: faPencil,
+  scroll: faNewspaper,
+  p: faCompactDisc,
+  file: faFileLines,
+  paintbrush: faPaintBrush,
+  thumbtack: faThumbtack,
+  film: faFilm,
+  envelope: faEnvelope,
+  hockey: faHockeyPuck,
+  wifi: faWifi,
+  calendar: faCalendarDays,
+  heartbeat: faHeartbeat,
+  cart: faCartShopping,
+  heart: faHeart,
+};
+
+export function AppGlyph({ name }: { name: string }) {
+  return <FontAwesomeIcon icon={iconMap[name] ?? faGamepad} />;
+}
