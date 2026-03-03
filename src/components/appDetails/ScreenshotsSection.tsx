@@ -230,6 +230,11 @@ export function ScreenshotsSection({
                               src={slide.src}
                               alt={`${appName} - скриншот`}
                               itemProp="screenshot"
+                              loading="lazy"
+                              referrerPolicy="no-referrer"
+                              onError={(event) => {
+                                event.currentTarget.src = "/assets/apps/1.png";
+                              }}
                               onLoad={(event) =>
                                 onImageLoad(
                                   slide.src,

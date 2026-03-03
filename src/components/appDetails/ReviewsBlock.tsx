@@ -27,17 +27,23 @@ function starsByScore(score: number) {
 }
 
 export function ReviewsBlock({ app }: ReviewsBlockProps) {
+  const reviews = Array.isArray(app.reviews) ? app.reviews : [];
+
   return (
     <Section>
       <ReviewsTop>
-        <H2>Отзывы</H2>
-        <ReviewBtn type="button">Написать отзыв</ReviewBtn>
+        <H2>{"\u041E\u0442\u0437\u044B\u0432\u044B"}</H2>
+        <ReviewBtn type="button">
+          {"\u041D\u0430\u043F\u0438\u0441\u0430\u0442\u044C \u043E\u0442\u0437\u044B\u0432"}
+        </ReviewBtn>
       </ReviewsTop>
       <ReviewsGrid>
         <ScoreCard>
           <ScoreValue>{app.ratingValue.toFixed(1)}</ScoreValue>
           <Stars>{starsByScore(app.ratingValue)}</Stars>
-          <div style={{ marginTop: 6 }}>{app.ratingCountText} всего</div>
+          <div style={{ marginTop: 6 }}>
+            {app.ratingCountText} {"\u0432\u0441\u0435\u0433\u043E"}
+          </div>
           <BarList>
             <BarRow>
               <span>5</span>
@@ -62,20 +68,30 @@ export function ReviewsBlock({ app }: ReviewsBlockProps) {
           </BarList>
         </ScoreCard>
         <ReviewsList>
-          {app.reviews.map((review) => (
-            <ReviewCard key={review.id}>
-              <Avatar src={review.avatar} alt={review.author} />
+          {reviews.length > 0 ? (
+            reviews.map((review) => (
+              <ReviewCard key={review.id}>
+                <Avatar src={review.avatar} alt={review.author} />
+                <div>
+                  <div>{review.text}</div>
+                  <ReviewAuthor>{review.author}</ReviewAuthor>
+                  <Stars>
+                    {"\u2605\u2605\u2605\u2605\u2605"
+                      .slice(0, review.stars)
+                      .padEnd(5, "\u2606")}
+                  </Stars>
+                </div>
+              </ReviewCard>
+            ))
+          ) : (
+            <ReviewCard>
               <div>
-                <div>{review.text}</div>
-                <ReviewAuthor>{review.author}</ReviewAuthor>
-                <Stars>
-                  {"\u2605\u2605\u2605\u2605\u2605"
-                    .slice(0, review.stars)
-                    .padEnd(5, "\u2606")}
-                </Stars>
+                {
+                  "\u041E\u0442\u0437\u044B\u0432\u044B \u043F\u043E\u043A\u0430 \u043D\u0435\u0434\u043E\u0441\u0442\u0443\u043F\u043D\u044B."
+                }
               </div>
             </ReviewCard>
-          ))}
+          )}
         </ReviewsList>
       </ReviewsGrid>
     </Section>

@@ -11,7 +11,7 @@ export const Hero = styled.section`
   align-items: stretch;
   overflow: hidden;
 
-  @media (max-width: 900px) {
+  @container store-content (max-width: 900px) {
     height: auto;
     min-height: 180px;
     grid-template-columns: 1fr;
@@ -54,7 +54,7 @@ export const HeroVisual = styled.div`
     background: #8ac170;
   }
 
-  @media (max-width: 900px) {
+  @container store-content (max-width: 900px) {
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(3, 80px);
 
@@ -82,7 +82,7 @@ export const HeroText = styled.div`
     line-height: 1.35;
   }
 
-  @media (max-width: 900px) {
+  @container store-content (max-width: 900px) {
     padding: 16px;
 
     h2 {
@@ -95,7 +95,7 @@ export const SectionHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: min(1240px, 100%);
+  width: 100%;
   margin-bottom: 6px;
   h3 {
     margin: 0;
@@ -121,7 +121,7 @@ export const SectionHeader = styled.div`
     box-shadow: inset 0 -3px 0 #7d931b;
   }
 
-  @media (max-width: 900px) {
+  @container store-content (max-width: 900px) {
     h3 {
       font-size: 30px;
     }
@@ -134,30 +134,18 @@ export const SectionHeader = styled.div`
 `;
 
 export const SectionSubtitle = styled.p`
-  width: min(1240px, 100%);
+  width: 100%;
   margin: 0 0 10px;
   color: #7a7a7a;
   font-size: 12px;
 `;
 
 export const CardsRow = styled.div`
-  width: min(1240px, 100%);
+  width: 100%;
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(146px, 1fr));
   gap: 10px;
   margin-bottom: 20px;
-
-  @media (max-width: 1200px) {
-    grid-template-columns: repeat(6, 1fr);
-  }
-
-  @media (max-width: 900px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  @media (max-width: 650px) {
-    grid-template-columns: repeat(auto-fill, minmax(146px, 1fr));
-  }
 `;
 
 export const Card = styled(Link)`
@@ -258,22 +246,10 @@ export const Price = styled.div`
 `;
 
 export const Grid = styled.div`
-  width: min(1240px, 100%);
+  width: 100%;
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(146px, 1fr));
   gap: 10px;
-
-  @media (max-width: 1200px) {
-    grid-template-columns: repeat(6, 1fr);
-  }
-
-  @media (max-width: 900px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  @media (max-width: 650px) {
-    grid-template-columns: repeat(auto-fill, minmax(146px, 1fr));
-  }
 `;
 
 export const DetailsTop = styled.section`
@@ -281,6 +257,10 @@ export const DetailsTop = styled.section`
   grid-template-columns: 196px 1fr;
   gap: 18px;
   margin-bottom: 20px;
+
+  @container store-content (max-width: 820px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 export const AppTitle = styled.h2`
@@ -320,6 +300,18 @@ export const ScreenshotStrip = styled.section`
   display: grid;
   grid-template-columns: repeat(4, minmax(220px, 1fr));
   gap: 12px;
+
+  @container store-content (max-width: 1100px) {
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+  }
+
+  @container store-content (max-width: 820px) {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+  }
+
+  @container store-content (max-width: 520px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 export const Shot = styled.div<{ $color: string }>`

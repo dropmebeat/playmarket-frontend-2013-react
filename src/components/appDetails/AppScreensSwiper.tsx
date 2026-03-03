@@ -68,7 +68,15 @@ export function AppScreensSwiper({ screenshots, alt }: AppScreensSwiperProps) {
           {screenshots.map((src, index) => (
             <SwiperSlide key={`${src}-${index}`}>
               <SlideBox>
-                <SlideImg src={src} alt={`${alt} screenshot ${index + 1}`} />
+                <SlideImg
+                  src={src}
+                  alt={`${alt} screenshot ${index + 1}`}
+                  loading="lazy"
+                  referrerPolicy="no-referrer"
+                  onError={(event) => {
+                    event.currentTarget.src = "/assets/apps/1.png";
+                  }}
+                />
                 {index === 0 ? (
                   <PlayOverlay type="button">▶</PlayOverlay>
                 ) : null}

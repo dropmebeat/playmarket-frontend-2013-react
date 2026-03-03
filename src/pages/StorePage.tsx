@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   CardsRow,
   Hero,
@@ -11,11 +11,37 @@ import {
 import { AppCard } from "../components/AppCard";
 import { storeApps } from "../data/apps";
 
+const APPS_BATCH_SIZE = 40;
+
 export function StorePage() {
+  const [visibleCount, setVisibleCount] = useState(APPS_BATCH_SIZE);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     document.title =
       "\u0047\u006f\u006f\u0067\u006c\u0065\u0020\u0050\u006c\u0061\u0079\u0020\u041c\u0430\u0440\u043a\u0435\u0442";
   }, []);
+
+  useEffect(() => {
+    const node = loadMoreRef.current;
+    if (!node) return;
+    if (visibleCount >= storeApps.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0]?.isIntersecting) return;
+        setVisibleCount((current) =>
+          Math.min(current + APPS_BATCH_SIZE, storeApps.length),
+        );
+      },
+      { rootMargin: "300px 0px" },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [visibleCount]);
+
+  const visibleApps = storeApps.slice(0, visibleCount);
 
   return (
     <StoreLayout variant="store-main" topTab="top">
@@ -61,10 +87,13 @@ export function StorePage() {
       </SectionSubtitle>
 
       <CardsRow>
-        {storeApps.map((item) => (
+        {visibleApps.map((item) => (
           <AppCard key={item.id} item={item} />
         ))}
       </CardsRow>
+      {visibleCount < storeApps.length ? (
+        <div ref={loadMoreRef} style={{ height: "1px", width: "100%" }} />
+      ) : null}
     </StoreLayout>
   );
 }

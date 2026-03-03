@@ -13,6 +13,11 @@ type StoreLayoutProps = {
   variant: LayoutVariant;
   topTab?: "home" | "top" | "new";
   hideSideSectionOnMobile?: boolean;
+  typeFilter?: {
+    value: string;
+    options: string[];
+    onChange: (value: string) => void;
+  };
   categoryFilter?: {
     value: string;
     options: string[];
@@ -151,6 +156,14 @@ const Body = styled.div`
 
 const Content = styled.main`
   padding: 36px 48px 28px;
+  container-type: inline-size;
+  container-name: store-content;
+
+  @media (min-width: 901px) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
   @media (max-width: 1200px) {
     padding: 24px 20px 24px;
@@ -162,6 +175,8 @@ const Content = styled.main`
 `;
 
 const Title = styled.h1`
+  width: 100%;
+  text-align: left;
   margin: 0 0 12px;
   font-size: 44px;
   font-weight: 500;
@@ -178,6 +193,7 @@ export function StoreLayout({
   variant,
   topTab = "home",
   hideSideSectionOnMobile = false,
+  typeFilter,
   categoryFilter,
   children,
 }: StoreLayoutProps) {
@@ -188,7 +204,11 @@ export function StoreLayout({
     <Page>
       <Upper>
         <Brand to={darkBrand ? "/store" : "/store/apps"} $dark={darkBrand}>
-          <BrandIcon src="/assets/theme/main_icon.png" alt="" aria-hidden="true" />
+          <BrandIcon
+            src="/assets/theme/main_icon.png"
+            alt=""
+            aria-hidden="true"
+          />
           {darkBrand
             ? "\u041C\u0430\u0433\u0430\u0437\u0438\u043D"
             : "\u041F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F"}
@@ -203,12 +223,34 @@ export function StoreLayout({
           <TopTabLink to="/store/apps" $active={topTab === "new"}>
             {"\u041D\u043E\u0432\u043E\u0435"}
           </TopTabLink>
+          {typeFilter ? (
+            <CategoryFilterWrap>
+              <CategorySelect
+                aria-label={
+                  "\u0422\u0438\u043F \u043A\u043E\u043D\u0442\u0435\u043D\u0442\u0430"
+                }
+                value={typeFilter.value}
+                onChange={(event) => typeFilter.onChange(event.target.value)}
+              >
+                {typeFilter.options.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </CategorySelect>
+              <CategoryArrow>v</CategoryArrow>
+            </CategoryFilterWrap>
+          ) : null}
           {categoryFilter ? (
             <CategoryFilterWrap>
               <CategorySelect
-                aria-label={"\u0424\u0438\u043B\u044C\u0442\u0440 \u043F\u043E \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u0438"}
+                aria-label={
+                  "\u0424\u0438\u043B\u044C\u0442\u0440 \u043F\u043E \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u0438"
+                }
                 value={categoryFilter.value}
-                onChange={(event) => categoryFilter.onChange(event.target.value)}
+                onChange={(event) =>
+                  categoryFilter.onChange(event.target.value)
+                }
               >
                 {categoryFilter.options.map((option) => (
                   <option key={option} value={option}>
@@ -239,7 +281,10 @@ export function StoreLayout({
       </Upper>
 
       <Body>
-        <StoreSidebar darkBrand={darkBrand} hideSideSectionOnMobile={hideSideSectionOnMobile} />
+        <StoreSidebar
+          darkBrand={darkBrand}
+          hideSideSectionOnMobile={hideSideSectionOnMobile}
+        />
         <Content>
           {sectionTitle ? <Title>{sectionTitle}</Title> : null}
           {children}

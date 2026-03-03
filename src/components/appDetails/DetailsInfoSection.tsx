@@ -1,11 +1,45 @@
 import type { AppData } from "../../data/apps";
+import { playCategories } from "../../data/playCategories";
 
 type DetailsInfoSectionProps = {
   app: AppData;
 };
 
+const categoryLabelById = new Map(
+  playCategories.map((category) => [category.id, category.label]),
+);
+
+function formatAppDate(value: string) {
+  const date = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("ru-RU", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(date);
+}
+
+function normalizePrice(value: string) {
+  return value
+    .replace(/\bUSD\s*([\d.,]+)/gi, "$$$1")
+    .replace(/([\d.,]+)\s*USD\b/gi, "$$$1")
+    .replace(/\s*\u0414\u041E\u041B\u041B\u0410\u0420\u0410/gi, "$")
+    .replace(/\s*\u0414\u041E\u041B\u041B\u0410\u0420\u041E\u0412/gi, "$")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
 export function DetailsInfoSection({ app }: DetailsInfoSectionProps) {
   const ratingWidth = Math.max(0, Math.min(100, (app.ratingValue / 5) * 100));
+  const normalizedPrice = normalizePrice(app.price);
+  const isFree = /^(free|\u0431\u0435\u0441\u043F\u043B\u0430\u0442\u043D\u043E|libre)$/i.test(
+    normalizedPrice.trim(),
+  );
+  const buyLabel = isFree
+    ? "\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C"
+    : `${normalizedPrice} \u041A\u0443\u043F\u0438\u0442\u044C`;
+  const categoryLabel = categoryLabelById.get(app.category) ?? app.category;
+  const formattedUpdatedAt = formatAppDate(app.updatedAt);
 
   return (
     <div className="details-info">
@@ -13,7 +47,7 @@ export function DetailsInfoSection({ app }: DetailsInfoSectionProps) {
         <img
           className="cover-image"
           src={app.image ?? "/assets/apps/1.png"}
-          alt="Обложка"
+          alt={"\u041E\u0431\u043B\u043E\u0436\u043A\u0430"}
           itemProp="image"
         />
       </div>
@@ -29,11 +63,11 @@ export function DetailsInfoSection({ app }: DetailsInfoSectionProps) {
           <a className="document-subtitle primary" href="#" itemProp="name">
             {app.publisher}
           </a>
-          <div className="document-subtitle">- {app.updatedAt}</div>
+          <div className="document-subtitle">- {formattedUpdatedAt}</div>
         </div>
         <div>
           <a className="document-subtitle category" href="#">
-            <span itemProp="genre">{app.category}</span>
+            <span itemProp="genre">{categoryLabel}</span>
           </a>
         </div>
 
@@ -43,7 +77,7 @@ export function DetailsInfoSection({ app }: DetailsInfoSectionProps) {
             data-docid={app.id}
           >
             <span className="price buy">
-              <span>{`${app.price} Купить`}</span>
+              <span>{buyLabel}</span>
             </span>
           </span>
           <div className="wishlist-container">
@@ -53,7 +87,9 @@ export function DetailsInfoSection({ app }: DetailsInfoSectionProps) {
             >
               <div className="wishlist-text">
                 <div className="wishlist-text-default wishlist-text-add">
-                  В список желаний
+                  {
+                    "\u0412 \u0441\u043F\u0438\u0441\u043E\u043A \u0436\u0435\u043B\u0430\u043D\u0438\u0439"
+                  }
                 </div>
               </div>
             </div>
@@ -77,8 +113,13 @@ export function DetailsInfoSection({ app }: DetailsInfoSectionProps) {
           </div>
           <div>
             <span className="badge">
-              <img src="/assets/top-developer.svg" alt="Топ разработчик" />
-              <span className="badge-title">Топ разработчик</span>
+              <img
+                src="/assets/top-developer.svg"
+                alt={"\u0422\u043E\u043F \u0440\u0430\u0437\u0440\u0430\u0431\u043E\u0442\u0447\u0438\u043A"}
+              />
+              <span className="badge-title">
+                {"\u0422\u043E\u043F \u0440\u0430\u0437\u0440\u0430\u0431\u043E\u0442\u0447\u0438\u043A"}
+              </span>
             </span>
           </div>
         </div>

@@ -16,6 +16,9 @@ const Side = styled.aside`
   border-right: 1px solid #d3d3d3;
 
   @media (max-width: 900px) {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
     position: static;
     top: auto;
     max-height: none;
@@ -49,6 +52,11 @@ const SideDivider = styled.div`
 
 const ColorNav = styled.div`
   display: grid;
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
 `;
 
 const ColorItem = styled(Link)<{ $bg: string }>`
@@ -111,46 +119,92 @@ export function StoreSidebar({
         <>
           <ColorNav>
             <ColorItem $bg="#a8c52e" to="/store/apps">
-              <ColorIcon src="/assets/theme/app_icon.png" alt="" aria-hidden="true" />
+              <ColorIcon
+                src="/assets/theme/app_icon.png"
+                alt=""
+                aria-hidden="true"
+              />
               {"\u041F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F"}
             </ColorItem>
             <ColorItem $bg="#ee6e2f" to="/store">
-              <ColorIcon src="/assets/theme/movie_icon.png" alt="" aria-hidden="true" />
+              <ColorIcon
+                src="/assets/theme/movie_icon.png"
+                alt=""
+                aria-hidden="true"
+              />
               {"\u0424\u0438\u043B\u044C\u043C\u044B \u0438 \u0422\u0412"}
             </ColorItem>
             <ColorItem $bg="#f0a30d" to="/store">
-              <ColorIcon src="/assets/theme/music_icon.png" alt="" aria-hidden="true" />
+              <ColorIcon
+                src="/assets/theme/music_icon.png"
+                alt=""
+                aria-hidden="true"
+              />
               {"\u041C\u0443\u0437\u044B\u043A\u0430"}
             </ColorItem>
             <ColorItem $bg="#2f8fd2" to="/store">
-              <ColorIcon src="/assets/theme/book_icon.png" alt="" aria-hidden="true" />
+              <ColorIcon
+                src="/assets/theme/book_icon.png"
+                alt=""
+                aria-hidden="true"
+              />
               {"\u041A\u043D\u0438\u0433\u0438"}
             </ColorItem>
             <ColorItem $bg="#6d83d5" to="/store">
-              <ColorIcon src="/assets/theme/magazine_icon.png" alt="" aria-hidden="true" />
+              <ColorIcon
+                src="/assets/theme/magazine_icon.png"
+                alt=""
+                aria-hidden="true"
+              />
               {"\u0416\u0443\u0440\u043D\u0430\u043B\u044B"}
             </ColorItem>
             <ColorItem $bg="#7f98ab" to="/store">
-              <ColorIcon src="/assets/theme/device_icon.png" alt="" aria-hidden="true" />
+              <ColorIcon
+                src="/assets/theme/device_icon.png"
+                alt=""
+                aria-hidden="true"
+              />
               {"\u0423\u0441\u0442\u0440\u043E\u0439\u0441\u0442\u0432\u0430"}
             </ColorItem>
           </ColorNav>
-          <SideSection>
-            <SideItem to="/store">{"\u041C\u043E\u0439 \u0441\u043F\u0438\u0441\u043E\u043A \u0436\u0435\u043B\u0430\u043D\u0438\u0439"}</SideItem>
-            <SideItem to="/store">{"\u0412\u044B\u043A\u0443\u043F\u0430\u0442\u044C"}</SideItem>
-            <SideItem to="/store">{"\u041A\u0443\u043F\u0438\u0442\u044C \u043F\u043E\u0434\u0430\u0440\u043E\u0447\u043D\u0443\u044E \u043A\u0430\u0440\u0442\u0443"}</SideItem>
-            <SideItem to="/store">{"\u041A\u0443\u043F\u0438\u0442\u044C \u043A\u0440\u0435\u0434\u0438\u0442\u044B Google Play"}</SideItem>
+          <SideSection $hideOnMobile>
+            <SideItem to="/store">
+              {
+                "\u041C\u043E\u0439 \u0441\u043F\u0438\u0441\u043E\u043A \u0436\u0435\u043B\u0430\u043D\u0438\u0439"
+              }
+            </SideItem>
+            <SideItem to="/store">
+              {"\u0412\u044B\u043A\u0443\u043F\u0430\u0442\u044C"}
+            </SideItem>
+            <SideItem to="/store">
+              {
+                "\u041A\u0443\u043F\u0438\u0442\u044C \u043F\u043E\u0434\u0430\u0440\u043E\u0447\u043D\u0443\u044E \u043A\u0430\u0440\u0442\u0443"
+              }
+            </SideItem>
+            <SideItem to="/store">
+              {
+                "\u041A\u0443\u043F\u0438\u0442\u044C \u043A\u0440\u0435\u0434\u0438\u0442\u044B Google Play"
+              }
+            </SideItem>
           </SideSection>
         </>
       ) : (
         <SideSection $hideOnMobile={hideSideSectionOnMobile}>
-          <SideItem to="/store/apps">{"\u041C\u043E\u0438 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F"}</SideItem>
+          <SideItem to="/store/apps">
+            {
+              "\u041C\u043E\u0438 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F"
+            }
+          </SideItem>
           <SideItem to="/store/apps" $active>
             {"\u041C\u0430\u0433\u0430\u0437\u0438\u043D"}
           </SideItem>
           <SideDivider />
           <SideItem to="/store/apps">{"\u0418\u0433\u0440\u044B"}</SideItem>
-          <SideItem to="/store/apps">{"\u0412\u044B\u0431\u043E\u0440 \u0440\u0435\u0434\u0430\u043A\u0446\u0438\u0438"}</SideItem>
+          <SideItem to="/store/apps">
+            {
+              "\u0412\u044B\u0431\u043E\u0440 \u0440\u0435\u0434\u0430\u043A\u0446\u0438\u0438"
+            }
+          </SideItem>
         </SideSection>
       )}
     </Side>

@@ -20,6 +20,11 @@ import {
 export function AppDetailsPage() {
   const { id } = useParams();
   const app = getAppById(id);
+  const formattedUpdatedAt = new Intl.DateTimeFormat("ru-RU", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(`${app.updatedAt}T00:00:00`));
   const isAppData = (entry: AppData | undefined): entry is AppData =>
     Boolean(entry);
 
@@ -70,7 +75,7 @@ export function AppDetailsPage() {
             <InfoGrid>
               <div>
                 <InfoTitle>Обновлено</InfoTitle>
-                <div>{app.updatedAt}</div>
+                <div>{formattedUpdatedAt}</div>
               </div>
               <div>
                 <InfoTitle>Размер</InfoTitle>

@@ -4,7 +4,7 @@ import type { StoreItem } from "../storeData";
 import { AppGlyph } from "./storeStyles";
 
 type AppCardProps = {
-  item: StoreItem;
+  item: StoreItem & { ratingValue?: number };
   priceText?: string;
 };
 
@@ -146,11 +146,13 @@ const TinyStar = styled.div.attrs({
   }
 `;
 
-const CurrentRating = styled.div.attrs({ className: "current-rating" })`
+const CurrentRating = styled.div.attrs({ className: "current-rating" })<{
+  $width: number;
+}>`
   position: absolute;
   left: 0;
   top: 0;
-  width: 82%;
+  width: ${({ $width }) => `${$width}%`};
   overflow: hidden;
   color: #7a7a7a;
   white-space: nowrap;
@@ -174,10 +176,17 @@ const BuyButtonContainer = styled.span.attrs({
 
 export function AppCard({ item, priceText }: AppCardProps) {
   const to = `/app/${item.id}`;
+  const ratingValue =
+    typeof item.ratingValue === "number" ? item.ratingValue : 0;
+  const ratingWidth = Math.max(0, Math.min(ratingValue, 5)) * 20;
   const rawPrice = priceText ?? item.price;
   const normalizedPrice = rawPrice
     .replace(/\s*\u0414\u041e\u041b\u041b\u0410\u0420\u0410/gi, "$")
     .replace(/\s*\u0414\u041e\u041b\u041b\u0410\u0420\u041e\u0412/gi, "$");
+  const isFree = /^(free|бесплатно|libre)$/i.test(normalizedPrice.trim());
+  const priceLabel = isFree
+    ? "\u0411\u0415\u0421\u041F\u041B\u0410\u0422\u041D\u041E"
+    : normalizedPrice;
 
   return (
     <CardRoot
@@ -195,7 +204,16 @@ export function AppCard({ item, priceText }: AppCardProps) {
                 <CoverInnerAlign>
                   <CoverImage $color={item.color}>
                     {item.image ? (
-                      <CoverImg src={item.image} alt={item.name} />
+                      <CoverImg
+                        src={item.image}
+                        alt={item.name}
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                        onError={(event) => {
+                          event.currentTarget.src =
+                            "/assets/theme/app_icon.png";
+                        }}
+                      />
                     ) : (
                       <AppGlyph name={item.icon} />
                     )}
@@ -222,13 +240,13 @@ export function AppCard({ item, priceText }: AppCardProps) {
           <StarsContainer>
             <ReasonSetStarRating>
               <TinyStar>
-                <CurrentRating />
+                <CurrentRating $width={ratingWidth} />
               </TinyStar>
             </ReasonSetStarRating>
             <PriceContainer>
               <BuyButtonContainer data-docid={item.id}>
                 <span className="price buy">
-                  <span>{normalizedPrice}</span>
+                  <span>{priceLabel}</span>
                 </span>
               </BuyButtonContainer>
             </PriceContainer>
@@ -238,3 +256,5 @@ export function AppCard({ item, priceText }: AppCardProps) {
     </CardRoot>
   );
 }
+
+export default AppCard;

@@ -10,7 +10,7 @@ type AppSearchProps = {
 };
 
 const SearchBar = styled.div`
-  width: min(1240px, 100%);
+  width: 100%;
   display: grid;
   grid-template-columns: 1fr 58px;
   margin-bottom: 12px;
@@ -54,7 +54,9 @@ export function AppSearch({
       <SearchInput
         type="search"
         placeholder={placeholder}
-        aria-label={"\u041F\u043E\u0438\u0441\u043A \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0439"}
+        aria-label={
+          "\u041F\u043E\u0438\u0441\u043A \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0439"
+        }
         value={value}
         onChange={(event) => onChange(event.target.value)}
       />

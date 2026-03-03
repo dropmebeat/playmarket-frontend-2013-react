@@ -11,21 +11,9 @@ type AppMiniSectionProps = {
 
 const ExistingCardsGrid = styled.div`
   display: grid;
-  width: min(1240px, 100%);
-  grid-template-columns: repeat(8, 1fr);
+  width: 100%;
+  grid-template-columns: repeat(auto-fill, minmax(146px, 1fr));
   gap: 10px;
-
-  @media (max-width: 1200px) {
-    grid-template-columns: repeat(6, 1fr);
-  }
-
-  @media (max-width: 900px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  @media (max-width: 650px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
 `;
 
 export function AppMiniSection({ title, apps, limit }: AppMiniSectionProps) {
