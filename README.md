@@ -1,90 +1,18 @@
-## YouGame Forum Frontend
-
-- Header and Footer cloned to match csgo-skins style (no i18n).
-- Global Montserrat font and color scheme applied.
-- Forum with sample forums, topics, and messages.
-
-### Scripts
-- dev: Vite dev server
-- build: TypeScript build + Vite build
-- preview: Vite preview
-
-### Routes
-- `/` → Forums list
-- `/forums` → Forums list
-- `/forums/:forumId` → Forum view
-- `/forums/:forumId/topic/:topicId` → Topic view
-
-# React + TypeScript + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+📥 PlayMarket 2013 Frontend
+Дизайн и Визуал
+Holo Interface: Характерный плиточный интерфейс с мягкими тенями.
+Header & Footer: Стилизованы под csgo-skins, но с элементами навигации старого Play Store.
+Шрифт: Глобальный Montserrat (современная замена стандартному Roboto) с характерной для 2013 года сеткой.
+Контент: Карточки приложений/форумов с иконками, рейтингом и кнопками «Установить» (Перейти).
+Доступные скрипты
+dev: Запуск дев-сервера Vite.
+build: Компиляция TypeScript и сборка проекта.
+preview: Проверка продакшн-билда.
+Структура путей (Routes)
+/ → Главная (Топ бесплатных / Рекомендации)
+/forums → Категории приложений/форумов
+/forums/:forumId → Список тем внутри категории
+/forums/:forumId/topic/:topicId → Страница «приложения» (детальный вид темы)
+Стек: React + TypeScript + Vite
+Проект базируется на Vite для мгновенного HMR. Конфигурация ESLint поддерживает строгую проверку типов (recommendedTypeChecked) для исключения ошибок при работе с пропсами и стейтом.
+Хочешь, чтобы я подготовил структуру React-компонента для типичной «карточки приложения» в стиле 2013 года?
