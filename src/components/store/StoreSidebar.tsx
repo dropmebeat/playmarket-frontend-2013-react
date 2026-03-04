@@ -12,8 +12,8 @@ const Side = styled.aside`
   align-self: start;
   max-height: calc(100vh - 46px);
   overflow: auto;
-  background: #efefef;
-  border-right: 1px solid #d3d3d3;
+  background: var(--bg-panel-soft);
+  border-right: 1px solid var(--border-main);
 
   @media (max-width: 900px) {
     display: flex;
@@ -24,7 +24,7 @@ const Side = styled.aside`
     max-height: none;
     overflow: visible;
     border-right: 0;
-    border-bottom: 1px solid #d3d3d3;
+    border-bottom: 1px solid var(--border-main);
   }
 `;
 
@@ -38,7 +38,8 @@ const SideSection = styled.div<{ $hideOnMobile?: boolean }>`
 
 const SideItem = styled(Link)<{ $active?: boolean }>`
   display: block;
-  color: ${({ $active }) => ($active ? "#95b728" : "#545454")};
+  color: ${({ $active }) =>
+    $active ? "var(--brand-accent)" : "var(--text-muted)"};
   font-size: 14px;
   line-height: 1.25;
   padding: 5px 0;
@@ -46,7 +47,7 @@ const SideItem = styled(Link)<{ $active?: boolean }>`
 
 const SideDivider = styled.div`
   height: 1px;
-  background: #d8d8d8;
+  background: var(--border-soft);
   margin: 8px 0;
 `;
 
@@ -126,7 +127,7 @@ export function StoreSidebar({
               />
               {"\u041F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F"}
             </ColorItem>
-            <ColorItem $bg="#ee6e2f" to="/store">
+            <ColorItem $bg="#ee6e2f" to="/store/movies">
               <ColorIcon
                 src="/assets/theme/movie_icon.png"
                 alt=""
@@ -199,7 +200,7 @@ export function StoreSidebar({
             {"\u041C\u0430\u0433\u0430\u0437\u0438\u043D"}
           </SideItem>
           <SideDivider />
-          <SideItem to="/store/apps">{"\u0418\u0433\u0440\u044B"}</SideItem>
+          <SideItem to="/store/games">{"\u0418\u0433\u0440\u044B"}</SideItem>
           <SideItem to="/store/apps">
             {
               "\u0412\u044B\u0431\u043E\u0440 \u0440\u0435\u0434\u0430\u043A\u0446\u0438\u0438"

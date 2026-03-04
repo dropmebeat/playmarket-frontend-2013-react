@@ -1,4 +1,5 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+﻿import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import type { Swiper as SwiperType } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -8,11 +9,14 @@ import { PlayOverlay, SlideBox, SlideImg } from "../../styles/appDetailsStyles";
 type ScreenshotsSectionProps = {
   screenshots: string[];
   trailerImage?: string;
+  trailerUrl?: string;
   appName: string;
 };
 
 type ShotOrientation = "landscape" | "portrait" | "square";
+
 const TRAILER_RATIO = 475 / 355;
+const MIN_PORTRAIT_RATIO = 1 / TRAILER_RATIO;
 
 const ScreenshotsWrap = styled.div`
   position: relative;
@@ -52,14 +56,14 @@ const ScreenshotsWrap = styled.div`
     top: 0;
     bottom: 0;
     width: 56px;
-    border: 1px solid #cfcfcf;
-    background: #f3f3f3;
+    border: 1px solid var(--border-main);
+    background: var(--bg-panel);
     z-index: 5;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #505050;
+    color: var(--text-main);
     font-size: 64px;
     font-weight: 300;
     line-height: 1;
@@ -69,7 +73,7 @@ const ScreenshotsWrap = styled.div`
 
   .expand-next:hover,
   .expand-prev:hover {
-    background: #fff;
+    background: var(--bg-hover);
   }
 
   .expand-next {
@@ -107,9 +111,82 @@ const ScreenshotsWrap = styled.div`
   }
 `;
 
+const FullscreenOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+`;
+
+const FullscreenImage = styled.img`
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+`;
+
+const FullscreenGallery = styled.div`
+  width: min(1400px, 100%);
+  height: 100%;
+
+  .swiper {
+    width: 100%;
+    height: 100%;
+  }
+
+  .swiper-slide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+`;
+
+const FullscreenVideoWrap = styled.div`
+  width: min(1200px, 100%);
+  aspect-ratio: 16 / 9;
+  background: #050607;
+`;
+
+const FullscreenVideo = styled.iframe`
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+`;
+
+const FullscreenClose = styled.button`
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 28px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+`;
+
+function getClampedRatio(ratio: number, orientation: ShotOrientation) {
+  if (orientation === "portrait") {
+    return Math.max(ratio, MIN_PORTRAIT_RATIO);
+  }
+
+  return ratio;
+}
+
 export function ScreenshotsSection({
   screenshots,
   trailerImage,
+  trailerUrl,
   appName,
 }: ScreenshotsSectionProps) {
   const swiperRef = useRef<SwiperType | null>(null);
@@ -117,15 +194,19 @@ export function ScreenshotsSection({
     Record<string, ShotOrientation>
   >({});
   const [ratios, setRatios] = useState<Record<string, number>>({});
+  const [fullscreenImageIndex, setFullscreenImageIndex] = useState<
+    number | null
+  >(null);
+  const [isTrailerFullscreen, setIsTrailerFullscreen] = useState(false);
 
   const slides = useMemo(
-    () =>
-      trailerImage
-        ? [
-            { src: trailerImage, isTrailer: true },
-            ...screenshots.map((src) => ({ src, isTrailer: false })),
-          ]
-        : screenshots.map((src) => ({ src, isTrailer: false })),
+    () => [
+      {
+        src: trailerImage ?? screenshots[0] ?? "/assets/apps/1.png",
+        isTrailer: true,
+      },
+      ...screenshots.map((src) => ({ src, isTrailer: false })),
+    ],
     [screenshots, trailerImage],
   );
 
@@ -133,8 +214,9 @@ export function ScreenshotsSection({
     (src: string, width: number, height: number) => {
       const next: ShotOrientation =
         width === height ? "square" : width > height ? "landscape" : "portrait";
-      const nextRatio =
+      const baseRatio =
         width > 0 && height > 0 ? width / height : TRAILER_RATIO;
+      const nextRatio = getClampedRatio(baseRatio, next);
 
       setOrientations((prev) =>
         prev[src] === next ? prev : { ...prev, [src]: next },
@@ -150,7 +232,7 @@ export function ScreenshotsSection({
     const swiper = swiperRef.current;
     if (!swiper || slides.length <= 1) return;
 
-    const hasTrailer = Boolean(trailerImage);
+    const hasTrailer = Boolean(slides[0]?.isTrailer);
     const firstImageIndex = hasTrailer ? 1 : 0;
     const lastImageIndex = slides.length - 1;
 
@@ -165,13 +247,13 @@ export function ScreenshotsSection({
     }
 
     swiper.slideTo(swiper.activeIndex + 1);
-  }, [slides.length, trailerImage]);
+  }, [slides]);
 
   const goToPrev = useCallback(() => {
     const swiper = swiperRef.current;
     if (!swiper || slides.length <= 1) return;
 
-    const hasTrailer = Boolean(trailerImage);
+    const hasTrailer = Boolean(slides[0]?.isTrailer);
     const firstImageIndex = hasTrailer ? 1 : 0;
     const lastImageIndex = slides.length - 1;
 
@@ -181,23 +263,110 @@ export function ScreenshotsSection({
     }
 
     swiper.slideTo(swiper.activeIndex - 1);
-  }, [slides.length, trailerImage]);
+  }, [slides]);
+
+  const trailerVideoUrl = useMemo(() => {
+    const query = encodeURIComponent(`${appName} trailer`);
+    const fallback = `https://www.youtube.com/embed?listType=search&list=${query}&autoplay=1&rel=0`;
+    const raw = String(trailerUrl ?? "").trim();
+    if (!raw) return fallback;
+
+    let parsed: URL;
+    try {
+      parsed = new URL(raw);
+    } catch {
+      return fallback;
+    }
+
+    const host = parsed.hostname.replace(/^www\./, "").toLowerCase();
+    if (host === "youtu.be") {
+      const id = parsed.pathname.replace(/^\/+/, "").split("/")[0];
+      return id
+        ? `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`
+        : fallback;
+    }
+
+    if (!host.endsWith("youtube.com")) return fallback;
+
+    const watchId = parsed.searchParams.get("v");
+    if (watchId)
+      return `https://www.youtube.com/embed/${watchId}?autoplay=1&rel=0`;
+
+    const pathParts = parsed.pathname.split("/").filter(Boolean);
+    if (pathParts[0] === "embed" && pathParts[1]) {
+      return `https://www.youtube.com/embed/${pathParts[1]}?autoplay=1&rel=0`;
+    }
+
+    if (pathParts[0] === "results") {
+      const searchQuery = parsed.searchParams.get("search_query");
+      if (!searchQuery) return fallback;
+      return `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(searchQuery)}&autoplay=1&rel=0`;
+    }
+
+    return fallback;
+  }, [appName, trailerUrl]);
+
+  const fullscreenImages = useMemo(
+    () =>
+      screenshots.length ? screenshots : [trailerImage ?? "/assets/apps/1.png"],
+    [screenshots, trailerImage],
+  );
+
+  const openImageFullscreen = useCallback(
+    (src: string) => {
+      setIsTrailerFullscreen(false);
+      const index = fullscreenImages.findIndex((item) => item === src);
+      setFullscreenImageIndex(index >= 0 ? index : 0);
+    },
+    [fullscreenImages],
+  );
+
+  const openTrailerFullscreen = useCallback(() => {
+    setIsTrailerFullscreen(true);
+    setFullscreenImageIndex(null);
+  }, []);
+
+  const closeFullscreen = useCallback(() => {
+    setFullscreenImageIndex(null);
+    setIsTrailerFullscreen(false);
+  }, []);
+
+  const isFullscreenOpen = isTrailerFullscreen || fullscreenImageIndex !== null;
+
+  useEffect(() => {
+    if (!isFullscreenOpen) return;
+
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeFullscreen();
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [closeFullscreen, isFullscreenOpen]);
 
   return (
-    <div className="details-section screenshots">
-      <div className="details-section-contents">
-        <div className="details-section-body expandable">
-          <ScreenshotsWrap>
-            <div className="expand-pages-container">
-              <Swiper
-                spaceBetween={8}
-                slidesPerView={"auto"}
-                onSwiper={(swiper) => {
-                  swiperRef.current = swiper;
-                }}
-              >
-                {slides.map((slide, index) =>
-                  (() => {
+    <>
+      <div className="details-section screenshots">
+        <div className="details-section-contents">
+          <div className="details-section-body expandable">
+            <ScreenshotsWrap>
+              <div className="expand-pages-container">
+                <Swiper
+                  spaceBetween={8}
+                  slidesPerView={"auto"}
+                  onSwiper={(swiper) => {
+                    swiperRef.current = swiper;
+                  }}
+                >
+                  {slides.map((slide, index) => {
                     const orientation = slide.isTrailer
                       ? "landscape"
                       : (orientations[slide.src] ?? "landscape");
@@ -210,15 +379,16 @@ export function ScreenshotsSection({
                       .join(" ");
                     const ratio = slide.isTrailer
                       ? TRAILER_RATIO
-                      : (ratios[slide.src] ?? TRAILER_RATIO);
+                      : getClampedRatio(
+                          ratios[slide.src] ?? TRAILER_RATIO,
+                          orientation,
+                        );
 
                     return (
                       <SwiperSlide
                         key={`${slide.src}-${index}`}
                         className={slideClass || undefined}
-                        style={
-                          { "--slide-ratio": ratio } as React.CSSProperties
-                        }
+                        style={{ "--slide-ratio": ratio } as CSSProperties}
                       >
                         <div
                           className="thumbnails"
@@ -232,6 +402,11 @@ export function ScreenshotsSection({
                               itemProp="screenshot"
                               loading="lazy"
                               referrerPolicy="no-referrer"
+                              onClick={() =>
+                                slide.isTrailer
+                                  ? openTrailerFullscreen()
+                                  : openImageFullscreen(slide.src)
+                              }
                               onError={(event) => {
                                 event.currentTarget.src = "/assets/apps/1.png";
                               }}
@@ -244,36 +419,83 @@ export function ScreenshotsSection({
                               }
                             />
                             {slide.isTrailer ? (
-                              <PlayOverlay type="button">▶</PlayOverlay>
+                              <PlayOverlay
+                                type="button"
+                                onClick={openTrailerFullscreen}
+                                aria-label="Открыть изображение в полноэкранном режиме"
+                              >
+                                ▶
+                              </PlayOverlay>
                             ) : null}
                           </SlideBox>
                         </div>
                       </SwiperSlide>
                     );
-                  })(),
-                )}
-              </Swiper>
-            </div>
-            <button
-              className="expand-button expand-prev"
-              type="button"
-              aria-label="Предыдущий"
-              onClick={goToPrev}
-            >
-              &#8249;
-            </button>
-            <button
-              className="expand-button expand-next"
-              type="button"
-              aria-label="Следующий"
-              onClick={goToNext}
-            >
-              &#8250;
-            </button>
-          </ScreenshotsWrap>
+                  })}
+                </Swiper>
+              </div>
+              <button
+                className="expand-button expand-prev"
+                type="button"
+                aria-label="Предыдущий"
+                onClick={goToPrev}
+              >
+                &#8249;
+              </button>
+              <button
+                className="expand-button expand-next"
+                type="button"
+                aria-label="Следующий"
+                onClick={goToNext}
+              >
+                &#8250;
+              </button>
+            </ScreenshotsWrap>
+          </div>
         </div>
+        <div className="details-section-divider" />
       </div>
-      <div className="details-section-divider" />
-    </div>
+      {isFullscreenOpen ? (
+        <FullscreenOverlay onClick={closeFullscreen}>
+          <FullscreenClose
+            type="button"
+            aria-label="Закрыть"
+            onClick={closeFullscreen}
+          >
+            ×
+          </FullscreenClose>
+          {isTrailerFullscreen ? (
+            <FullscreenVideoWrap onClick={(event) => event.stopPropagation()}>
+              <FullscreenVideo
+                src={trailerVideoUrl}
+                title={`${appName} - трейлер`}
+                allow="autoplay; encrypted-media; picture-in-picture"
+                allowFullScreen
+              />
+            </FullscreenVideoWrap>
+          ) : (
+            <FullscreenGallery onClick={(event) => event.stopPropagation()}>
+              <Swiper
+                slidesPerView={1}
+                spaceBetween={0}
+                initialSlide={fullscreenImageIndex ?? 0}
+                onSlideChange={(swiper) => {
+                  setFullscreenImageIndex(swiper.activeIndex);
+                }}
+              >
+                {fullscreenImages.map((src, index) => (
+                  <SwiperSlide key={`${src}-${index}`}>
+                    <FullscreenImage
+                      src={src}
+                      alt={`${appName} - полноэкранный скриншот ${index + 1}`}
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </FullscreenGallery>
+          )}
+        </FullscreenOverlay>
+      ) : null}
+    </>
   );
 }

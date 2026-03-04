@@ -1,7 +1,7 @@
 export type PlayCategory = { id: string; label: string };
 
 // AUTO-GENERATED FILE. DO NOT EDIT BY HAND.
-// Generated at: 2026-03-03T11:55:19.085Z
+// Generated at: 2026-03-04T11:58:43.345Z
 
 export const generatedPlayCategories: PlayCategory[] = [
   {

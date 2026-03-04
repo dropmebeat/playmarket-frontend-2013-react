@@ -3,6 +3,9 @@ import { playCategories } from "../../data/playCategories";
 
 type DetailsInfoSectionProps = {
   app: AppData;
+  onDownloadClick?: () => void;
+  actionLabel?: string;
+  showTopDeveloperBadge?: boolean;
 };
 
 const categoryLabelById = new Map(
@@ -29,15 +32,14 @@ function normalizePrice(value: string) {
     .trim();
 }
 
-export function DetailsInfoSection({ app }: DetailsInfoSectionProps) {
+export function DetailsInfoSection({
+  app,
+  onDownloadClick,
+  actionLabel = "Загрузить",
+  showTopDeveloperBadge = true,
+}: DetailsInfoSectionProps) {
   const ratingWidth = Math.max(0, Math.min(100, (app.ratingValue / 5) * 100));
   const normalizedPrice = normalizePrice(app.price);
-  const isFree = /^(free|\u0431\u0435\u0441\u043F\u043B\u0430\u0442\u043D\u043E|libre)$/i.test(
-    normalizedPrice.trim(),
-  );
-  const buyLabel = isFree
-    ? "\u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C"
-    : `${normalizedPrice} \u041A\u0443\u043F\u0438\u0442\u044C`;
   const categoryLabel = categoryLabelById.get(app.category) ?? app.category;
   const formattedUpdatedAt = formatAppDate(app.updatedAt);
 
@@ -76,9 +78,21 @@ export function DetailsInfoSection({ app }: DetailsInfoSectionProps) {
             className="buy-button-container apps medium play-button"
             data-docid={app.id}
           >
-            <span className="price buy">
-              <span>{buyLabel}</span>
-            </span>
+            <button
+              type="button"
+              className="price buy"
+              onClick={onDownloadClick}
+            >
+              <span>
+                {actionLabel}
+                {normalizedPrice &&
+                !/^(free|\u0431\u0435\u0441\u043F\u043B\u0430\u0442\u043D\u043E|libre)$/i.test(
+                  normalizedPrice.trim(),
+                )
+                  ? ` (${normalizedPrice})`
+                  : ""}
+              </span>
+            </button>
           </span>
           <div className="wishlist-container">
             <div
@@ -111,17 +125,23 @@ export function DetailsInfoSection({ app }: DetailsInfoSectionProps) {
             (<span className="reviewers-small" />
             {app.ratingCountText.replace(/[()]/g, "")})
           </div>
-          <div>
-            <span className="badge">
-              <img
-                src="/assets/top-developer.svg"
-                alt={"\u0422\u043E\u043F \u0440\u0430\u0437\u0440\u0430\u0431\u043E\u0442\u0447\u0438\u043A"}
-              />
-              <span className="badge-title">
-                {"\u0422\u043E\u043F \u0440\u0430\u0437\u0440\u0430\u0431\u043E\u0442\u0447\u0438\u043A"}
+          {showTopDeveloperBadge ? (
+            <div>
+              <span className="badge">
+                <img
+                  src="/assets/top-developer.svg"
+                  alt={
+                    "\u0422\u043E\u043F \u0440\u0430\u0437\u0440\u0430\u0431\u043E\u0442\u0447\u0438\u043A"
+                  }
+                />
+                <span className="badge-title">
+                  {
+                    "\u0422\u043E\u043F \u0440\u0430\u0437\u0440\u0430\u0431\u043E\u0442\u0447\u0438\u043A"
+                  }
+                </span>
               </span>
-            </span>
-          </div>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

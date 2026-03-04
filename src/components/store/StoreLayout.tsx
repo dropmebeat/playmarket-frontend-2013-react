@@ -1,17 +1,32 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCog, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
+﻿import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCircleHalfStroke,
+  faCog,
+  faGamepad,
+  faVideo,
+} from "@fortawesome/free-solid-svg-icons";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { StoreSidebar } from "./StoreSidebar";
 import { ActionButton } from "../common/ActionButton";
+import { clearAuthUser, getAuthUser, subscribeAuth } from "../../auth/session";
+import { useThemeMode } from "../../theme/useThemeMode";
 
 export type LayoutVariant = "store-main" | "apps";
 
 type StoreLayoutProps = {
   sectionTitle?: string;
   variant: LayoutVariant;
+  brandContentType?: "apps" | "games" | "movies";
+  accentTone?: "default" | "movies";
   topTab?: "home" | "top" | "new";
+  topTabLinks?: {
+    home: string;
+    top: string;
+    new: string;
+  };
   hideSideSectionOnMobile?: boolean;
   typeFilter?: {
     value: string;
@@ -26,10 +41,18 @@ type StoreLayoutProps = {
   children: ReactNode;
 };
 
-const Page = styled.div`
+const Page = styled.div<{ $accentTone: "default" | "movies" }>`
   min-height: 100vh;
-  background: #d6d6d6;
-  color: #4a4a4a;
+  background: var(--bg-page);
+  color: var(--text-main);
+
+  ${({ $accentTone }) =>
+    $accentTone === "movies"
+      ? `
+    --brand-accent: #d84a38;
+    --brand-accent-strong: #a23326;
+  `
+      : ""}
 `;
 
 const Upper = styled.div`
@@ -38,8 +61,8 @@ const Upper = styled.div`
   position: sticky;
   top: 0;
   z-index: 30;
-  background: #f2f2f2;
-  border-bottom: 1px solid #d0d0d0;
+  background: var(--bg-header);
+  border-bottom: 1px solid var(--border-main);
   display: grid;
   grid-template-columns: 182px 1fr auto;
   align-items: center;
@@ -52,7 +75,8 @@ const Upper = styled.div`
 
 const Brand = styled(Link)<{ $dark?: boolean }>`
   height: 100%;
-  background: ${({ $dark }) => ($dark ? "#3a3a3a" : "#a8c52e")};
+  background: ${({ $dark }) =>
+    $dark ? "var(--brand-dark)" : "var(--brand-accent)"};
   color: #fff;
   display: flex;
   align-items: center;
@@ -66,6 +90,12 @@ const BrandIcon = styled.img`
   height: 18px;
   object-fit: contain;
   display: block;
+`;
+
+const BrandFaIcon = styled(FontAwesomeIcon)`
+  width: 18px;
+  height: 18px;
+  color: inherit;
 `;
 
 const TopTabs = styled.div`
@@ -86,9 +116,10 @@ const TopTabLink = styled(NavLink)<{ $active?: boolean }>`
   display: flex;
   align-items: center;
   padding: 0 14px;
-  color: ${({ $active }) => ($active ? "#454545" : "#666")};
+  color: ${({ $active }) =>
+    $active ? "var(--text-main)" : "var(--text-muted)"};
   border-bottom: 3px solid
-    ${({ $active }) => ($active ? "#a8c52e" : "transparent")};
+    ${({ $active }) => ($active ? "var(--brand-accent)" : "transparent")};
   font-size: 14px;
 
   @media (max-width: 900px) {
@@ -112,9 +143,9 @@ const CategoryFilterWrap = styled.div`
 const CategorySelect = styled.select`
   width: 100%;
   height: 30px;
-  border: 1px solid #c9c9c9;
-  background: #f5f5f5;
-  color: #555;
+  border: 1px solid var(--border-main);
+  background: var(--bg-panel);
+  color: var(--text-muted);
   font-size: 12px;
   padding: 0 26px 0 10px;
   appearance: none;
@@ -122,7 +153,7 @@ const CategorySelect = styled.select`
 
   &:focus {
     outline: none;
-    border-color: #9dbc36;
+    border-color: var(--brand-accent);
     box-shadow: 0 0 0 1px rgba(157, 188, 54, 0.2);
   }
 `;
@@ -133,8 +164,11 @@ const CategoryArrow = styled.span`
   right: 9px;
   top: 50%;
   transform: translateY(-50%);
-  color: #666;
-  font-size: 11px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid var(--text-muted);
 `;
 
 const UpperIcons = styled.div`
@@ -174,61 +208,123 @@ const Content = styled.main`
   }
 `;
 
+const ContentHeader = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+
+  @media (max-width: 900px) {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+`;
+
 const Title = styled.h1`
   width: 100%;
   text-align: left;
-  margin: 0 0 12px;
+  margin: 0;
   font-size: 44px;
   font-weight: 500;
-  color: #3f3f3f;
+  color: var(--text-main);
 
   @media (max-width: 900px) {
     font-size: 30px;
-    margin-bottom: 10px;
+  }
+`;
+
+const CategoryFilterInline = styled.div`
+  position: relative;
+  min-width: 230px;
+  max-width: 340px;
+  width: min(340px, 100%);
+
+  @media (max-width: 900px) {
+    min-width: 0;
+    max-width: none;
+    width: 100%;
   }
 `;
 
 export function StoreLayout({
   sectionTitle,
   variant,
+  brandContentType = "apps",
+  accentTone = "default",
   topTab = "home",
+  topTabLinks,
   hideSideSectionOnMobile = false,
   typeFilter,
   categoryFilter,
   children,
 }: StoreLayoutProps) {
   const darkBrand = variant === "store-main";
+  const isGamesBrand = !darkBrand && brandContentType === "games";
+  const isMoviesBrand = !darkBrand && brandContentType === "movies";
   const navigate = useNavigate();
+  const { isDark, toggleTheme } = useThemeMode();
+  const [authUser, setAuthUser] = useState(() => getAuthUser());
+
+  useEffect(() => {
+    return subscribeAuth(() => {
+      setAuthUser(getAuthUser());
+    });
+  }, []);
+
+  const tabs = topTabLinks ?? {
+    home: "/store/apps",
+    top: "/store",
+    new: "/store/apps",
+  };
+  const brandLink = darkBrand
+    ? "/store"
+    : isGamesBrand
+      ? "/store/games"
+      : isMoviesBrand
+        ? "/store/movies"
+        : "/store/apps";
 
   return (
-    <Page>
+    <Page $accentTone={accentTone}>
       <Upper>
-        <Brand to={darkBrand ? "/store" : "/store/apps"} $dark={darkBrand}>
-          <BrandIcon
-            src="/assets/theme/main_icon.png"
-            alt=""
-            aria-hidden="true"
-          />
+        <Brand to={brandLink} $dark={darkBrand}>
+          {isGamesBrand ? (
+            <BrandFaIcon icon={faGamepad} aria-hidden="true" />
+          ) : isMoviesBrand ? (
+            <BrandFaIcon icon={faVideo} aria-hidden="true" />
+          ) : (
+            <BrandIcon
+              src="/assets/theme/main_icon.png"
+              alt=""
+              aria-hidden="true"
+            />
+          )}
           {darkBrand
-            ? "\u041C\u0430\u0433\u0430\u0437\u0438\u043D"
-            : "\u041F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F"}
+            ? "Магазин"
+            : isGamesBrand
+              ? "Игры"
+              : isMoviesBrand
+                ? "Фильмы"
+                : "Приложения"}
         </Brand>
         <TopTabs>
-          <TopTabLink to="/store/apps" $active={topTab === "home"}>
-            {"\u0413\u043B\u0430\u0432\u043D\u0430\u044F"}
+          <TopTabLink to={tabs.home} $active={topTab === "home"}>
+            Главная
           </TopTabLink>
-          <TopTabLink to="/store" $active={topTab === "top"}>
-            {"\u0422\u043E\u043F"}
+          <TopTabLink to={tabs.top} $active={topTab === "top"}>
+            Топ
           </TopTabLink>
-          <TopTabLink to="/store/apps" $active={topTab === "new"}>
-            {"\u041D\u043E\u0432\u043E\u0435"}
+          <TopTabLink to={tabs.new} $active={topTab === "new"}>
+            Новое
           </TopTabLink>
           {typeFilter ? (
             <CategoryFilterWrap>
               <CategorySelect
-                aria-label={
-                  "\u0422\u0438\u043F \u043A\u043E\u043D\u0442\u0435\u043D\u0442\u0430"
-                }
+                aria-label="Тип контента"
                 value={typeFilter.value}
                 onChange={(event) => typeFilter.onChange(event.target.value)}
               >
@@ -238,45 +334,55 @@ export function StoreLayout({
                   </option>
                 ))}
               </CategorySelect>
-              <CategoryArrow>v</CategoryArrow>
-            </CategoryFilterWrap>
-          ) : null}
-          {categoryFilter ? (
-            <CategoryFilterWrap>
-              <CategorySelect
-                aria-label={
-                  "\u0424\u0438\u043B\u044C\u0442\u0440 \u043F\u043E \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u0438"
-                }
-                value={categoryFilter.value}
-                onChange={(event) =>
-                  categoryFilter.onChange(event.target.value)
-                }
-              >
-                {categoryFilter.options.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </CategorySelect>
-              <CategoryArrow>v</CategoryArrow>
+              <CategoryArrow aria-hidden="true" />
             </CategoryFilterWrap>
           ) : null}
         </TopTabs>
         <UpperIcons>
-          <ActionButton type="button" ariaLabel="help" square>
-            <FontAwesomeIcon icon={faQuestionCircle} />
-          </ActionButton>
-          <ActionButton type="button" ariaLabel="settings" square>
-            <FontAwesomeIcon icon={faCog} />
-          </ActionButton>
           <ActionButton
             type="button"
-            ariaLabel={"\u0412\u043E\u0439\u0442\u0438"}
-            variant="primary"
-            onClick={() => navigate("/auth")}
+            ariaLabel={
+              isDark ? "Включить светлую тему" : "Включить тёмную тему"
+            }
+            square
+            onClick={toggleTheme}
           >
-            {"\u0412\u043E\u0439\u0442\u0438"}
+            <FontAwesomeIcon icon={faCircleHalfStroke} />
           </ActionButton>
+          {authUser ? (
+            <>
+              <ActionButton type="button" ariaLabel="settings" square>
+                <FontAwesomeIcon icon={faCog} />
+              </ActionButton>
+              <ActionButton
+                type="button"
+                ariaLabel={authUser.name}
+                onClick={() => navigate("/user")}
+              >
+                {authUser.name}
+              </ActionButton>
+              <ActionButton
+                type="button"
+                ariaLabel="Выйти"
+                variant="primary"
+                onClick={() => {
+                  clearAuthUser();
+                  navigate("/auth");
+                }}
+              >
+                Выйти
+              </ActionButton>
+            </>
+          ) : (
+            <ActionButton
+              type="button"
+              ariaLabel="Войти"
+              variant="primary"
+              onClick={() => navigate("/auth")}
+            >
+              Войти
+            </ActionButton>
+          )}
         </UpperIcons>
       </Upper>
 
@@ -286,7 +392,29 @@ export function StoreLayout({
           hideSideSectionOnMobile={hideSideSectionOnMobile}
         />
         <Content>
-          {sectionTitle ? <Title>{sectionTitle}</Title> : null}
+          {sectionTitle || categoryFilter ? (
+            <ContentHeader>
+              {sectionTitle ? <Title>{sectionTitle}</Title> : <div />}
+              {categoryFilter ? (
+                <CategoryFilterInline>
+                  <CategorySelect
+                    aria-label="Фильтр по категории"
+                    value={categoryFilter.value}
+                    onChange={(event) =>
+                      categoryFilter.onChange(event.target.value)
+                    }
+                  >
+                    {categoryFilter.options.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </CategorySelect>
+                  <CategoryArrow aria-hidden="true" />
+                </CategoryFilterInline>
+              ) : null}
+            </ContentHeader>
+          ) : null}
           {children}
         </Content>
       </Body>

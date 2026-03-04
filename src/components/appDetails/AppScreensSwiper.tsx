@@ -1,4 +1,4 @@
-import { Navigation } from "swiper/modules";
+﻿import { Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -20,12 +20,12 @@ const SwiperWrap = styled.div`
 
   .swiper-button-prev,
   .swiper-button-next {
-    color: #4f4f4f;
-    background: #f7f7f7;
+    color: var(--text-main);
+    background: var(--bg-panel);
     width: 56px;
     height: 180px;
     margin-top: -90px;
-    border: 1px solid #c4c4c4;
+    border: 1px solid var(--border-main);
     border-radius: 2px;
     box-shadow: none;
   }

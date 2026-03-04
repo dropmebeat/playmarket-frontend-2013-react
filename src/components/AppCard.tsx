@@ -1,19 +1,41 @@
-import { Link } from "react-router-dom";
-import styled from "styled-components";
+﻿import { Link } from "react-router-dom";
+import styled, { keyframes } from "styled-components";
 import type { StoreItem } from "../storeData";
 import { AppGlyph } from "./storeStyles";
 
 type AppCardProps = {
   item: StoreItem & { ratingValue?: number };
   priceText?: string;
+  mode?: "app" | "movie";
+  to?: string;
 };
+
+const shimmer = keyframes`
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+`;
+
+const SkeletonBlock = styled.div`
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--bg-panel) 82%, #000 18%) 0%,
+    var(--bg-panel) 50%,
+    color-mix(in srgb, var(--bg-panel) 82%, #000 18%) 100%
+  );
+  background-size: 200% 100%;
+  animation: ${shimmer} 1.3s ease-in-out infinite;
+`;
 
 const CardRoot = styled.article.attrs({
   className: "card apps square-cover tiny no-rationale",
 })`
   position: relative;
-  background: #f3f3f3;
-  border: 1px solid #d8d8d8;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-soft);
   padding: 8px;
   overflow: hidden;
 `;
@@ -30,24 +52,26 @@ const CardClickTarget = styled(Link).attrs({ className: "card-click-target" })`
   z-index: 5;
 `;
 
-const CardTop = styled.div`
+const CardTop = styled.div<{ $mode: "app" | "movie" }>`
   margin: -8px -8px 8px;
-  padding: 8px;
+  padding: ${({ $mode }) => ($mode === "movie" ? "0" : "8px")};
   border-radius: 2px;
   transition: background-color 140ms ease;
 
   ${CardRoot}:hover &,
   ${CardRoot}:focus-within & {
-    background: #c7c7c7;
+    background: var(--bg-card-hover);
   }
 `;
 
-const Cover = styled.div.attrs({ className: "cover" })`
+const Cover = styled.div.attrs({ className: "cover" })<{
+  $mode: "app" | "movie";
+}>`
   position: relative;
   background: transparent;
-  border-radius: 2px;
-  padding: 8px;
-  margin-bottom: 8px;
+  border-radius: ${({ $mode }) => ($mode === "movie" ? "0" : "2px")};
+  padding: ${({ $mode }) => ($mode === "movie" ? "0" : "8px")};
+  margin-bottom: ${({ $mode }) => ($mode === "movie" ? "0" : "8px")};
 `;
 
 const CoverImageContainer = styled.div.attrs({
@@ -56,35 +80,42 @@ const CoverImageContainer = styled.div.attrs({
   width: 100%;
 `;
 
-const CoverOuterAlign = styled.div.attrs({ className: "cover-outer-align" })`
+const CoverOuterAlign = styled.div.attrs({ className: "cover-outer-align" })<{
+  $mode: "app" | "movie";
+}>`
   display: flex;
-  justify-content: center;
+  justify-content: ${({ $mode }) => ($mode === "movie" ? "stretch" : "center")};
 `;
 
-const CoverInnerAlign = styled.div.attrs({ className: "cover-inner-align" })`
+const CoverInnerAlign = styled.div.attrs({ className: "cover-inner-align" })<{
+  $mode: "app" | "movie";
+}>`
   width: 100%;
-  max-width: 126px;
+  max-width: ${({ $mode }) => ($mode === "movie" ? "none" : "126px")};
 `;
 
 const CoverImage = styled.div.attrs({ className: "cover-image" })<{
   $color: string;
+  $mode: "app" | "movie";
 }>`
   width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 12px;
+  aspect-ratio: ${({ $mode }) => ($mode === "movie" ? "2 / 3" : "1 / 1")};
+  border-radius: ${({ $mode }) => ($mode === "movie" ? "0" : "12px")};
   background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 48px;
-  color: #666;
+  color: var(--text-muted);
   overflow: hidden;
 `;
 
-const CoverImg = styled.img`
+const CoverImg = styled.img<{ $mode: "app" | "movie" }>`
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transform: ${({ $mode }) => ($mode === "movie" ? "scale(1.035)" : "none")};
+  transform-origin: center;
   display: block;
 `;
 
@@ -95,7 +126,7 @@ const Details = styled.div.attrs({ className: "details" })`
 
 const TitleLink = styled(Link).attrs({ className: "title" })`
   display: block;
-  color: #4b4b4b;
+  color: var(--text-main);
   font-size: 12px;
   line-height: 1.2;
   white-space: nowrap;
@@ -109,7 +140,7 @@ const SubtitleContainer = styled.div.attrs({ className: "subtitle-container" })`
 
 const SubtitleLink = styled(Link).attrs({ className: "subtitle" })`
   display: block;
-  color: #999;
+  color: var(--text-soft);
   font-size: 10px;
   white-space: nowrap;
   overflow: hidden;
@@ -139,7 +170,7 @@ const TinyStar = styled.div.attrs({
   position: relative;
   font-size: 11px;
   line-height: 1;
-  color: #b8b8b8;
+  color: color-mix(in srgb, var(--text-soft) 72%, #fff 28%);
 
   &::before {
     content: "★★★★★";
@@ -154,7 +185,7 @@ const CurrentRating = styled.div.attrs({ className: "current-rating" })<{
   top: 0;
   width: ${({ $width }) => `${$width}%`};
   overflow: hidden;
-  color: #7a7a7a;
+  color: var(--text-muted);
   white-space: nowrap;
 
   &::before {
@@ -168,25 +199,62 @@ const BuyButtonContainer = styled.span.attrs({
   className: "buy-button-container apps is-price-tag",
 })`
   .price.buy {
-    color: #94b629;
+    color: var(--brand-accent);
     font-size: 11px;
     white-space: nowrap;
   }
 `;
 
-export function AppCard({ item, priceText }: AppCardProps) {
-  const to = `/app/${item.id}`;
+const SkeletonCover = styled(SkeletonBlock)`
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+`;
+
+const SkeletonTitle = styled(SkeletonBlock)`
+  height: 12px;
+  width: 92%;
+  border-radius: 3px;
+  margin-bottom: 6px;
+`;
+
+const SkeletonSubtitle = styled(SkeletonBlock)`
+  height: 10px;
+  width: 62%;
+  border-radius: 3px;
+`;
+
+const SkeletonMeta = styled.div`
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+`;
+
+const SkeletonStars = styled(SkeletonBlock)`
+  height: 10px;
+  width: 56px;
+  border-radius: 3px;
+`;
+
+const SkeletonPrice = styled(SkeletonBlock)`
+  height: 10px;
+  width: 42px;
+  border-radius: 3px;
+`;
+
+export function AppCard({ item, priceText, mode = "app", to }: AppCardProps) {
+  const cardTo = to ?? `/app/${item.id}`;
   const ratingValue =
     typeof item.ratingValue === "number" ? item.ratingValue : 0;
   const ratingWidth = Math.max(0, Math.min(ratingValue, 5)) * 20;
   const rawPrice = priceText ?? item.price;
   const normalizedPrice = rawPrice
-    .replace(/\s*\u0414\u041e\u041b\u041b\u0410\u0420\u0410/gi, "$")
-    .replace(/\s*\u0414\u041e\u041b\u041b\u0410\u0420\u041e\u0412/gi, "$");
+    .replace(/\s*ДОЛЛАРА/gi, "$")
+    .replace(/\s*ДОЛЛАРОВ/gi, "$");
   const isFree = /^(free|бесплатно|libre)$/i.test(normalizedPrice.trim());
-  const priceLabel = isFree
-    ? "\u0411\u0415\u0421\u041F\u041B\u0410\u0422\u041D\u041E"
-    : normalizedPrice;
+  const priceLabel = isFree ? "БЕСПЛАТНО" : normalizedPrice;
 
   return (
     <CardRoot
@@ -195,16 +263,17 @@ export function AppCard({ item, priceText }: AppCardProps) {
       data-short-classes="card apps square-cover tiny no-rationale"
     >
       <CardContent data-uitype="500">
-        <CardClickTarget to={to} aria-label={item.name} />
+        <CardClickTarget to={cardTo} aria-label={item.name} />
 
-        <CardTop>
-          <Cover>
+        <CardTop $mode={mode}>
+          <Cover $mode={mode}>
             <CoverImageContainer>
-              <CoverOuterAlign>
-                <CoverInnerAlign>
-                  <CoverImage $color={item.color}>
+              <CoverOuterAlign $mode={mode}>
+                <CoverInnerAlign $mode={mode}>
+                  <CoverImage $color={item.color} $mode={mode}>
                     {item.image ? (
                       <CoverImg
+                        $mode={mode}
                         src={item.image}
                         alt={item.name}
                         loading="lazy"
@@ -225,12 +294,12 @@ export function AppCard({ item, priceText }: AppCardProps) {
         </CardTop>
 
         <Details>
-          <TitleLink to={to} title={item.name}>
+          <TitleLink to={cardTo} title={item.name}>
             {item.name}
             <span className="paragraph-end" />
           </TitleLink>
           <SubtitleContainer>
-            <SubtitleLink to={to} title={item.publisher}>
+            <SubtitleLink to={cardTo} title={item.publisher}>
               {item.publisher}
             </SubtitleLink>
           </SubtitleContainer>
@@ -252,6 +321,41 @@ export function AppCard({ item, priceText }: AppCardProps) {
             </PriceContainer>
           </StarsContainer>
         </ReasonSet>
+      </CardContent>
+    </CardRoot>
+  );
+}
+
+export function AppCardSkeleton({ mode = "app" }: { mode?: "app" | "movie" }) {
+  const isMovie = mode === "movie";
+  return (
+    <CardRoot aria-hidden="true">
+      <CardContent>
+        <CardTop $mode={mode}>
+          <Cover $mode={mode}>
+            <CoverImageContainer>
+              <CoverOuterAlign $mode={mode}>
+                <CoverInnerAlign $mode={mode}>
+                  <SkeletonCover
+                    style={
+                      isMovie
+                        ? { aspectRatio: "2 / 3", borderRadius: 0 }
+                        : undefined
+                    }
+                  />
+                </CoverInnerAlign>
+              </CoverOuterAlign>
+            </CoverImageContainer>
+          </Cover>
+        </CardTop>
+        <Details>
+          <SkeletonTitle />
+          <SkeletonSubtitle />
+        </Details>
+        <SkeletonMeta>
+          <SkeletonStars />
+          <SkeletonPrice />
+        </SkeletonMeta>
       </CardContent>
     </CardRoot>
   );

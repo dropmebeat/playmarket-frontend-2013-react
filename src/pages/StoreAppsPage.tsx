@@ -1,28 +1,96 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+﻿import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRail, Grid, StoreLayout } from "../components/storeStyles";
-import { AppCard } from "../components/AppCard";
+import { AppCard, AppCardSkeleton } from "../components/AppCard";
 import { AppSearch } from "../components/store/AppSearch";
-import { storeApps } from "../data/apps";
+import { loadStoreApps, type AppData } from "../data/apps";
 import { playCategories } from "../data/playCategories";
 
-const ALL_CATEGORIES_LABEL =
-  "\u041A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u0438";
-const CONTENT_APPS =
-  "\u041F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F";
-const CONTENT_GAMES = "\u0418\u0433\u0440\u044B";
+const ALL_CATEGORIES_LABEL = "Категории";
+const CONTENT_APPS = "Приложения";
+const CONTENT_GAMES = "Игры";
 const APPS_BATCH_SIZE = 40;
+const INITIAL_SKELETON_COUNT = 18;
 
-export function StoreAppsPage() {
+function toUpdatedTimestamp(value?: string) {
+  const parsed = Date.parse(String(value ?? ""));
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+function parseInstallFloor(value?: string) {
+  const text = String(value ?? "");
+  if (!text) return 0;
+  const rangeMatch = text.match(/(\d[\d,]*)\s*-\s*(\d[\d,]*)/);
+  if (rangeMatch) {
+    return Number.parseInt(rangeMatch[1].replace(/,/g, ""), 10) || 0;
+  }
+
+  const plusMatch = text.match(/(\d[\d,]*)\s*\+/);
+  if (plusMatch) {
+    return Number.parseInt(plusMatch[1].replace(/,/g, ""), 10) || 0;
+  }
+
+  const firstNumber = text.match(/\d[\d,]*/);
+  return firstNumber
+    ? Number.parseInt(firstNumber[0].replace(/,/g, ""), 10) || 0
+    : 0;
+}
+
+function byUpdatedAtDesc(a: AppData, b: AppData) {
+  const diff =
+    toUpdatedTimestamp(b.updatedAt) - toUpdatedTimestamp(a.updatedAt);
+  if (diff !== 0) return diff;
+  const installDiff =
+    parseInstallFloor(b.installs) - parseInstallFloor(a.installs);
+  if (installDiff !== 0) return installDiff;
+  const ratingDiff = (b.ratingValue ?? 0) - (a.ratingValue ?? 0);
+  if (ratingDiff !== 0) return ratingDiff;
+  return a.name.localeCompare(b.name, "ru");
+}
+
+type StoreAppsPageProps = {
+  initialContentType?: "apps" | "games";
+};
+
+export function StoreAppsPage({
+  initialContentType = "apps",
+}: StoreAppsPageProps) {
+  const defaultContentType =
+    initialContentType === "games" ? CONTENT_GAMES : CONTENT_APPS;
+  const [appsData, setAppsData] = useState<AppData[]>([]);
   const [query, setQuery] = useState("");
-  const [contentType, setContentType] = useState(CONTENT_APPS);
+  const [contentType, setContentType] = useState(defaultContentType);
   const [category, setCategory] = useState(ALL_CATEGORIES_LABEL);
   const [visibleCount, setVisibleCount] = useState(APPS_BATCH_SIZE);
+  const [isLoading, setIsLoading] = useState(true);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    document.title =
-      "\u0047\u006f\u006f\u0067\u006c\u0065\u0020\u0050\u006c\u0061\u0079\u0020\u041c\u0430\u0440\u043a\u0435\u0442";
+    document.title = "Google Play Маркет";
   }, []);
+
+  useEffect(() => {
+    let isActive = true;
+
+    setIsLoading(true);
+    loadStoreApps()
+      .then((data) => {
+        if (!isActive) return;
+        setAppsData(data);
+      })
+      .finally(() => {
+        if (!isActive) return;
+        setIsLoading(false);
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    setContentType(defaultContentType);
+    setCategory(ALL_CATEGORIES_LABEL);
+  }, [defaultContentType]);
 
   const categoryLabelToId = useMemo(() => {
     return new Map(playCategories.map((item) => [item.label, item.id]));
@@ -50,19 +118,21 @@ export function StoreAppsPage() {
         : (categoryLabelToId.get(category) ?? category);
     const selectedGameType = contentType === CONTENT_GAMES;
 
-    return storeApps.filter((item) => {
-      const isGame = item.category.startsWith("GAME_");
-      if (isGame !== selectedGameType) return false;
+    return appsData
+      .filter((item) => {
+        const isGame = item.category.startsWith("GAME_");
+        if (isGame !== selectedGameType) return false;
 
-      const categoryMatch =
-        selectedCategoryId === null || item.category === selectedCategoryId;
-      if (!categoryMatch) return false;
-      if (!value) return true;
-      const haystack =
-        `${item.name} ${item.publisher} ${item.id}`.toLowerCase();
-      return haystack.includes(value);
-    });
-  }, [category, categoryLabelToId, contentType, query]);
+        const categoryMatch =
+          selectedCategoryId === null || item.category === selectedCategoryId;
+        if (!categoryMatch) return false;
+        if (!value) return true;
+        const haystack =
+          `${item.name} ${item.publisher} ${item.id}`.toLowerCase();
+        return haystack.includes(value);
+      })
+      .sort(byUpdatedAtDesc);
+  }, [appsData, category, categoryLabelToId, contentType, query]);
 
   useEffect(() => {
     setCategory(ALL_CATEGORIES_LABEL);
@@ -73,6 +143,8 @@ export function StoreAppsPage() {
   }, [query, category, contentType]);
 
   useEffect(() => {
+    if (isLoading) return;
+
     const node = loadMoreRef.current;
     if (!node) return;
     if (visibleCount >= filteredApps.length) return;
@@ -89,7 +161,7 @@ export function StoreAppsPage() {
 
     observer.observe(node);
     return () => observer.disconnect();
-  }, [filteredApps.length, visibleCount]);
+  }, [filteredApps.length, isLoading, visibleCount]);
 
   const visibleApps = filteredApps.slice(0, visibleCount);
 
@@ -97,13 +169,9 @@ export function StoreAppsPage() {
     <StoreLayout
       sectionTitle={contentType}
       variant="apps"
+      brandContentType={contentType === CONTENT_GAMES ? "games" : "apps"}
       topTab="new"
       hideSideSectionOnMobile
-      typeFilter={{
-        value: contentType,
-        options: [CONTENT_APPS, CONTENT_GAMES],
-        onChange: setContentType,
-      }}
       categoryFilter={{
         value: category,
         options: categoryOptions,
@@ -111,17 +179,15 @@ export function StoreAppsPage() {
       }}
     >
       <ArrowRail>?</ArrowRail>
-      <AppSearch
-        value={query}
-        onChange={setQuery}
-        placeholder={"\u0418\u0441\u043A\u0430\u0442\u044C"}
-      />
+      <AppSearch value={query} onChange={setQuery} placeholder="Искать" />
       <Grid>
-        {visibleApps.map((item) => (
-          <AppCard key={item.id} item={item} />
-        ))}
+        {isLoading
+          ? Array.from({ length: INITIAL_SKELETON_COUNT }).map((_, index) => (
+              <AppCardSkeleton key={`apps-skeleton-${index}`} />
+            ))
+          : visibleApps.map((item) => <AppCard key={item.id} item={item} />)}
       </Grid>
-      {visibleCount < filteredApps.length ? (
+      {!isLoading && visibleCount < filteredApps.length ? (
         <div ref={loadMoreRef} style={{ height: "1px", width: "100%" }} />
       ) : null}
     </StoreLayout>

@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 export const Hero = styled.section`
   width: min(930px, 100%);
+  align-self: flex-start;
   height: 235px;
   background: #000;
   margin-bottom: 18px;
@@ -101,11 +102,11 @@ export const SectionHeader = styled.div`
     margin: 0;
     font-size: 43px;
     font-weight: 500;
-    color: #3f3f3f;
+    color: var(--text-main);
     font-style: normal;
   }
   button {
-    background: #a8c52e;
+    background: var(--brand-accent);
     border: 0;
     color: #fff;
     font-size: 12px;
@@ -117,8 +118,8 @@ export const SectionHeader = styled.div`
   }
 
   button:hover {
-    background: #b6d13a;
-    box-shadow: inset 0 -3px 0 #7d931b;
+    background: color-mix(in srgb, var(--brand-accent) 86%, #fff 14%);
+    box-shadow: inset 0 -3px 0 var(--brand-accent-strong);
   }
 
   @container store-content (max-width: 900px) {
@@ -136,7 +137,7 @@ export const SectionHeader = styled.div`
 export const SectionSubtitle = styled.p`
   width: 100%;
   margin: 0 0 10px;
-  color: #7a7a7a;
+  color: var(--text-soft);
   font-size: 12px;
 `;
 
@@ -149,8 +150,8 @@ export const CardsRow = styled.div`
 `;
 
 export const Card = styled(Link)`
-  background: #f3f3f3;
-  border: 1px solid #d8d8d8;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-soft);
   padding: 10px 8px 8px;
 
   &:hover,
@@ -209,7 +210,7 @@ export const AppIconFrame = styled.div`
 `;
 
 export const AppName = styled.div`
-  color: #4b4b4b;
+  color: var(--text-main);
   font-size: 12px;
   margin-bottom: 1px;
   white-space: nowrap;
@@ -218,7 +219,7 @@ export const AppName = styled.div`
 `;
 
 export const Publisher = styled.div`
-  color: #999;
+  color: var(--text-soft);
   font-size: 10px;
   margin-bottom: 6px;
   white-space: nowrap;
@@ -234,13 +235,13 @@ export const CardBottom = styled.div`
 `;
 
 export const CardStars = styled.div`
-  color: #777;
+  color: var(--text-muted);
   font-size: 11px;
   letter-spacing: 1px;
 `;
 
 export const Price = styled.div`
-  color: #94b629;
+  color: var(--brand-accent);
   font-size: 11px;
   white-space: nowrap;
 `;
@@ -267,11 +268,11 @@ export const AppTitle = styled.h2`
   margin: 0 0 6px;
   font-size: 36px;
   font-weight: 400;
-  color: #404040;
+  color: var(--text-main);
 `;
 
 export const Meta = styled.div`
-  color: #7e7e7e;
+  color: var(--text-muted);
   font-size: 12px;
   line-height: 1.5;
   margin-bottom: 12px;
@@ -279,7 +280,7 @@ export const Meta = styled.div`
 
 export const InstallButton = styled.button`
   border: 0;
-  background: #a8c52e;
+  background: var(--brand-accent);
   color: #fff;
   font-size: 12px;
   padding: 7px 14px;
@@ -287,15 +288,15 @@ export const InstallButton = styled.button`
 `;
 
 export const WishButton = styled.button`
-  border: 1px solid #d3d3d3;
-  background: #efefef;
-  color: #666;
+  border: 1px solid var(--border-main);
+  background: var(--bg-panel-soft);
+  color: var(--text-muted);
   font-size: 12px;
   padding: 7px 12px;
 `;
 
 export const ScreenshotStrip = styled.section`
-  border-top: 1px solid #d0d0d0;
+  border-top: 1px solid var(--border-main);
   padding-top: 14px;
   display: grid;
   grid-template-columns: repeat(4, minmax(220px, 1fr));
@@ -322,25 +323,25 @@ export const Shot = styled.div<{ $color: string }>`
 
 export const FooterBlock = styled.div`
   margin-top: 18px;
-  border-top: 1px solid #d0d0d0;
+  border-top: 1px solid var(--border-main);
   padding-top: 18px;
 `;
 
 export const TranslateCard = styled.div`
-  background: #f3f3f3;
-  border: 1px solid #d8d8d8;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-soft);
   padding: 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   span {
     font-size: 12px;
-    color: #6f6f6f;
+    color: var(--text-muted);
   }
   button {
-    border: 1px solid #d1d1d1;
-    background: #fff;
-    color: #666;
+    border: 1px solid var(--border-main);
+    background: var(--bg-input);
+    color: var(--text-muted);
     font-size: 12px;
     padding: 6px 10px;
     cursor: pointer;
@@ -351,9 +352,9 @@ export const TranslateCard = styled.div`
       box-shadow 120ms ease;
 
     &:hover {
-      background: #f7f7f7;
-      border-color: #bababa;
-      color: #555;
+      background: var(--bg-hover);
+      border-color: var(--border-soft);
+      color: var(--text-main);
     }
 
     &:focus-visible {
@@ -364,13 +365,13 @@ export const TranslateCard = styled.div`
 `;
 
 export const Rating = styled.div`
-  color: #707070;
+  color: var(--text-muted);
   font-size: 12px;
   margin-top: 10px;
 `;
 
 export const SmallHint = styled.div`
-  color: #6e6e6e;
+  color: var(--text-muted);
   margin-top: 8px;
   font-size: 12px;
 `;
@@ -384,7 +385,7 @@ export const ArrowRail = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #8f8f8f;
+  color: var(--text-soft);
   font-size: 26px;
 
   @media (max-width: 900px) {

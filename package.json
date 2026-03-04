@@ -8,7 +8,11 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "sync:google-play": "node scripts/sync-google-play.mjs"
+    "sync:google-play": "node scripts/sync-google-play.mjs",
+    "sync:google-play:packages": "node scripts/sync-google-play.mjs",
+    "sync:google-play:ui": "bun scripts/sync-google-play-ui.mjs",
+    "clean:app-data": "node scripts/clean-app-data.mjs",
+    "clear:app-data": "node scripts/clear-app-data.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

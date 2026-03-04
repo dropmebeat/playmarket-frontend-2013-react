@@ -15,7 +15,7 @@ type ActionButtonProps = {
 
 const Base = styled.button<{ $variant: ActionButtonVariant; $square: boolean }>`
   height: 30px;
-  border: 1px solid #d2d2d2;
+  border: 1px solid var(--border-main);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -41,22 +41,22 @@ const Base = styled.button<{ $variant: ActionButtonVariant; $square: boolean }>`
   ${({ $variant }) =>
     $variant === "primary"
       ? css`
-          border-color: #3e6fbe;
-          background: #4b86e8;
+          border-color: var(--button-primary-border);
+          background: var(--button-primary-bg);
           color: #fff;
 
           &:hover {
-            background: #3f73c7;
-            border-color: #345fa3;
+            background: var(--button-primary-hover);
+            border-color: var(--button-primary-hover-border);
           }
         `
       : css`
-          background: #f5f5f5;
-          color: #333;
+          background: var(--bg-panel);
+          color: var(--text-main);
 
           &:hover {
-            background: #ececec;
-            border-color: #bdbdbd;
+            background: var(--bg-hover);
+            border-color: var(--border-soft);
           }
         `}
 

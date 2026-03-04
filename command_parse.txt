@@ -1,1 +1,7 @@
-Run bun run sync:google-play
+bun run sync:google-play
+bun run clean:app-data
+bun run clear:app-data
+
+bun run sync:google-play:ui`
+2. Открыть `http://127.0.0.1:8787`
+3. Нажать `Запустить синк
